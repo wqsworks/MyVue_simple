@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <!-- <script src="./src/index.js"></script> -->
+  <!-- 1.创建虚拟节点 将虚拟节点转化成真实节点 -->
+  <!-- 2.组件的实现 setup -->
+  <!-- 3.reactive api 实现effect-->
+  <!-- 4.diff算法-->
+  <!-- 5.vite-->
+  <script type="module">
+    // children 可以是数组 也可以是字符串
+    import { render, effect, reactive } from './src/index.js'
+    // import { render } from './src/index.js'
+    const state = reactive({
+      count: 0,
+      name: 'zhufeng',
+      flag: 998
+    })
+    const MyComponet = {
+      setup(props, context) {
+        // 如果没有返回函数 会用template => render  再把render函数挂载到setup的返回结果中
+        return () => { //render函数
+          return {
+            tag: 'div',
+            props: { style: { color: 'pink' } },
+            children: [{
+              tag: 'p',
+              props: null,
+              children: '我是一个自定义组件：' + state.count
+            }, {
+              tag: 'button',
+              props: {
+                onClick: () => state.count++
+              },
+              children: '点我啊1'
+            }, {
+              tag: 'button',
+              props: {
+                onClick: () => { state.name = 'jw', console.log(state) }
+              },
+              children: '点我啊2'
+            }]
+          }
+        }
+      }
+    }
+
+    effect(() => {  // => 类似于vue2中的watcher
+      const vnode = {
+        tag: 'div',
+        props: { style: { border: '1px solid yellow' } },
+        // children可以是数组 字符串（对象此次不考虑）
+        children: [{
+          tag: 'p',
+          props: { style: { color: 'blue' } },
+          children: `vue@3 -计数器` + state.count
+        }, {
+          tag: 'button',
+          props: {
+            onClick: () => {
+              state.count++
+              // console.log(state.flag)
+            }
+          },
+          children: `点我啊`
+        }, {
+          tag: MyComponet, // 标签就是当前组件
+          props: null,
+          children: ''// 组件的插槽
+        },
+        {
+          tag: MyComponet, // 标签就是当前组件
+          props: null,
+          children: ''// 组件的插槽
+        }
+        ]
+      }
+      render(vnode, app) // 渲染操作
+    })
+
+  </script>
+</body>
+
+</html>
